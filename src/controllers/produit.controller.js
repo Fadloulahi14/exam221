@@ -44,7 +44,6 @@ const update = asyncHandler(async (req, res) => {
   if (prixUnitaire !== undefined) updateData.prixUnitaire = prixUnitaire;
   if (quantiteStock !== undefined) updateData.quantiteStock = quantiteStock;
 
-  // Si une nouvelle image est fournie, ré-uploader et écraser l'URL
   if (req.file) {
     const uploaded = await uploadToImgBB(req.file.buffer, req.file.originalname);
     updateData.image = uploaded.url;

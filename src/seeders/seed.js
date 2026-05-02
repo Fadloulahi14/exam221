@@ -30,26 +30,21 @@ async function seed() {
     await sequelize.sync({ alter: true });
     console.log('✅ Modèles synchronisés');
 
-    // Nettoyage dans le bon ordre (FK constraints)
     await Approvisionnement.destroy({ where: {} });
     await Produit.destroy({ where: {} });
     await Fournisseur.destroy({ where: {} });
     await User.destroy({ where: {} });
     console.log('🗑️  Tables vidées');
 
-    // Création des utilisateurs (les hooks bcrypt s'appliquent automatiquement)
     const createdUsers = await User.bulkCreate(users, { individualHooks: true });
     console.log(`👤 ${createdUsers.length} utilisateurs créés`);
 
-    // Création des fournisseurs
     const createdFournisseurs = await Fournisseur.bulkCreate(fournisseurs);
     console.log(`🏭 ${createdFournisseurs.length} fournisseurs créés`);
 
-    // Création des produits
     const createdProduits = await Produit.bulkCreate(produits);
     console.log(`📦 ${createdProduits.length} produits créés`);
 
-    // Approvisionnements avec transactions (mise à jour du stock incluse)
     const appros = [
       { quantite: 15, fournisseurId: createdFournisseurs[0].id, produitId: createdProduits[0].id },
       { quantite: 20, fournisseurId: createdFournisseurs[0].id, produitId: createdProduits[1].id },
@@ -73,7 +68,6 @@ async function seed() {
     }
     console.log(`📋 ${appros.length} approvisionnements créés (stocks mis à jour)`);
 
-    // Résumé final
     console.log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     console.log('🚀 SEED TERMINÉ — Données de connexion');
     console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');

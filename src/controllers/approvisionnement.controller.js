@@ -24,7 +24,6 @@ const create = asyncHandler(async (req, res) => {
       { transaction: t }
     );
 
-    // Incrémentation du stock dans la même transaction
     await produit.increment('quantiteStock', { by: quantite, transaction: t });
 
     await t.commit();
@@ -67,7 +66,6 @@ const update = asyncHandler(async (req, res) => {
 
   const t = await sequelize.transaction();
   try {
-    // Ajuster le stock si la quantité change
     if (quantite !== undefined && quantite !== appro.quantite) {
       const produit = await Produit.findByPk(appro.produitId, { transaction: t });
       const diff = quantite - appro.quantite;

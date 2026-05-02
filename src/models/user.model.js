@@ -47,12 +47,10 @@ const User = sequelize.define('User', {
   },
 });
 
-// Méthode pour comparer les mots de passe
 User.prototype.comparePassword = async function (candidatePassword) {
   return bcrypt.compare(candidatePassword, this.password);
 };
 
-// Masquer le mot de passe dans les réponses JSON
 User.prototype.toJSON = function () {
   const values = { ...this.get() };
   delete values.password;

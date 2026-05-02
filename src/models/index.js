@@ -4,7 +4,6 @@ const Fournisseur = require('./fournisseur.model');
 const Produit = require('./produit.model');
 const Approvisionnement = require('./approvisionnement.model');
 
-// Associations
 Fournisseur.hasMany(Approvisionnement, { foreignKey: 'fournisseurId', onDelete: 'RESTRICT' });
 Approvisionnement.belongsTo(Fournisseur, { foreignKey: 'fournisseurId' });
 

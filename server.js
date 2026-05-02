@@ -6,11 +6,9 @@ const PORT = process.env.PORT || 3000;
 
 async function startServer() {
   try {
-    // Vérifier la connexion à la base de données
     await sequelize.authenticate();
     console.log('Connexion PostgreSQL (Neon) établie avec succès.');
 
-    // Synchroniser les modèles (alter en dev pour préserver les données)
     if (process.env.NODE_ENV === 'development') {
       await sequelize.sync({ alter: true });
       console.log('Modèles Sequelize synchronisés.');
