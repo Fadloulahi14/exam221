@@ -33,7 +33,7 @@ const Produit = sequelize.define('Produit', {
     type: DataTypes.STRING,
     allowNull: true,
   },
-  imageDeleteUrl: {
+  imagePublicId: {
     type: DataTypes.STRING,
     allowNull: true,
   },

@@ -1,11 +1,10 @@
 const { ValidationError, UniqueConstraintError, ForeignKeyConstraintError } = require('sequelize');
 const ApiError = require('../utils/ApiError');
 
-
+// eslint-disable-next-line no-unused-vars
 const errorMiddleware = (err, req, res, next) => {
-
   if (err.code === 'LIMIT_FILE_SIZE') {
-    return res.status(400).json({ success: false, message: 'Fichier trop volumineux (max 32 MB)' });
+    return res.status(400).json({ success: false, message: 'Fichier trop volumineux (max 10 MB)' });
   }
 
   if (err instanceof ApiError) {
@@ -33,10 +32,6 @@ const errorMiddleware = (err, req, res, next) => {
   }
   if (err.name === 'TokenExpiredError') {
     return res.status(401).json({ success: false, message: 'Token expiré' });
-  }
-
-  if (err.isAxiosError) {
-    return res.status(502).json({ success: false, message: `Erreur service externe: ${err.message}` });
   }
 
   console.error('Erreur non gérée:', err);

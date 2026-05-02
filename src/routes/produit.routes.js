@@ -11,7 +11,7 @@ router.use(authMiddleware);
  * @swagger
  * tags:
  *   name: Produits
- *   description: Gestion des produits avec upload d'images via ImgBB
+ *   description: Gestion des produits avec upload d'images via Cloudinary
  */
 
 /**

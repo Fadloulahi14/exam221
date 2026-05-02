@@ -1,5 +1,5 @@
 const { Produit } = require('../models');
-const { uploadToImgBB } = require('../services/imgbb.service');
+const { uploadToCloudinary, deleteFromCloudinary } = require('../services/cloudinary.service');
 const ApiError = require('../utils/ApiError');
 const ApiResponse = require('../utils/ApiResponse');
 const asyncHandler = require('../utils/asyncHandler');
@@ -9,8 +9,8 @@ const create = asyncHandler(async (req, res) => {
   let imageData = {};
 
   if (req.file) {
-    const uploaded = await uploadToImgBB(req.file.buffer, req.file.originalname);
-    imageData = { image: uploaded.url, imageDeleteUrl: uploaded.deleteUrl };
+    const { url, publicId } = await uploadToCloudinary(req.file.buffer, req.file.originalname);
+    imageData = { image: url, imagePublicId: publicId };
   }
 
   const produit = await Produit.create({ libelle, prixUnitaire, quantiteStock: quantiteStock || 0, ...imageData });
@@ -45,9 +45,14 @@ const update = asyncHandler(async (req, res) => {
   if (quantiteStock !== undefined) updateData.quantiteStock = quantiteStock;
 
   if (req.file) {
-    const uploaded = await uploadToImgBB(req.file.buffer, req.file.originalname);
-    updateData.image = uploaded.url;
-    updateData.imageDeleteUrl = uploaded.deleteUrl;
+    const ancienPublicId = produit.imagePublicId;
+    const { url, publicId } = await uploadToCloudinary(req.file.buffer, req.file.originalname);
+    updateData.image = url;
+    updateData.imagePublicId = publicId;
+    // Suppression de l'ancienne image sur Cloudinary après mise à jour réussie
+    await produit.update(updateData);
+    await deleteFromCloudinary(ancienPublicId);
+    return ApiResponse.success(res, { produit }, 'Produit mis à jour');
   }
 
   await produit.update(updateData);
@@ -57,7 +62,12 @@ const update = asyncHandler(async (req, res) => {
 const remove = asyncHandler(async (req, res) => {
   const produit = await Produit.findByPk(req.params.id);
   if (!produit) throw new ApiError(404, 'Produit introuvable');
+
+  const publicId = produit.imagePublicId;
   await produit.destroy();
+  // Suppression de l'image Cloudinary après destruction en base
+  await deleteFromCloudinary(publicId);
+
   return res.status(204).send();
 });
 
